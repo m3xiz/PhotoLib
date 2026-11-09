@@ -1,0 +1,328 @@
+:root {
+  --bg: #14161a;
+  --panel: #1d2026;
+  --border: #2b2f38;
+  --text: #e6e8eb;
+  --muted: #9aa1ac;
+  --accent: #5b9dff;
+}
+* { box-sizing: border-box; }
+html, body { max-width: 100%; overflow-x: hidden; } /* évite tout débordement horizontal résiduel sur mobile */
+body {
+  margin: 0;
+  font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.header-title { display: flex; align-items: center; gap: 8px; }
+h1 { margin: 0; font-size: 20px; }
+.icon-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 14px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.status-modal.hidden { display: none; }
+.status-modal-content {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  width: min(340px, 100%);
+}
+.status-modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.status-modal-header h3 { margin: 0; font-size: 15px; }
+#status-body p { margin: 6px 0; font-size: 14px; color: var(--text); }
+
+.filters {
+  padding: 16px 24px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+.filter-row { margin-bottom: 12px; }
+.filter-row label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.filter-row.inline { display: flex; gap: 24px; flex-wrap: wrap; }
+.filter-row.inline > div { flex: 1 1 220px; min-width: 0; } /* peut rétrécir sous 220px si l'écran est plus étroit */
+input[type=text], input[type=date] {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: 6px;
+  width: 100%;
+  font-size: 16px; /* évite le zoom automatique iOS/Android au focus d'un champ */
+}
+.keyword-input-wrap { position: relative; max-width: 420px; }
+.keyword-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+  z-index: 20;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+.keyword-suggestion-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--text);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: normal;
+  border-radius: 0;
+  cursor: pointer;
+}
+.keyword-suggestion-item:hover, .keyword-suggestion-item:active { background: var(--bg); }
+.keyword-mode { margin-top: 6px; font-size: 13px; color: var(--muted); display: flex; gap: 16px; flex-wrap: wrap; }
+.keyword-mode label { display: flex; align-items: center; gap: 4px; }
+.exclusive-toggle {
+  display: flex; align-items: center; gap: 6px;
+  margin-top: 8px; font-size: 13px; color: var(--muted);
+}
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.chip {
+  background: var(--accent);
+  color: #06121f;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.chip button { background: none; border: none; color: #06121f; cursor: pointer; font-weight: bold; }
+
+.filter-actions { display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
+button {
+  background: var(--accent);
+  border: none;
+  color: #06121f;
+  padding: 9px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  -webkit-appearance: none;
+  appearance: none;
+}
+button.secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
+
+.results-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap; padding: 8px 24px;
+}
+.results-meta { color: var(--muted); font-size: 13px; }
+.sort-select-label { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.sort-select-label select {
+  background: var(--bg); border: 1px solid var(--border); color: var(--text);
+  padding: 6px 8px; border-radius: 6px; font-size: 13px;
+}
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  padding: 12px 24px;
+}
+.photo-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--text);
+  display: block;
+  cursor: pointer;
+}
+.photo-card img { width: 100%; height: 200px; object-fit: contain; background: #000; display: block; }
+.photo-card .meta { padding: 6px 8px; font-size: 11px; color: var(--muted); }
+.photo-card .meta .fname { color: var(--text); font-size: 12px; display: block; margin-bottom: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.pagination { display: flex; gap: 8px; justify-content: center; padding: 16px; flex-wrap: wrap; }
+.pagination button { min-width: 36px; }
+.pagination button.active { background: #fff; }
+
+/* --- Visionneuse plein écran (lightbox) --- */
+/* Classe utilitaire générique -- utilisée par plusieurs éléments (image/
+   message RAW non affichable/panneau info) en plus des règles combinées
+   déjà présentes (.lightbox.hidden, .lightbox-info-panel.hidden). */
+.hidden { display: none !important; }
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+.lightbox.hidden { display: none; }
+
+.lightbox-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap; /* CRITIQUE sur petit écran : sans ça, les boutons de
+                       gauche (Infos, Original) débordent hors du viewport
+                       et deviennent invisibles au lieu de passer à la ligne */
+  gap: 8px;
+  padding: 10px 12px;
+  flex-shrink: 0;
+}
+.lightbox-toolbar button, .lightbox-link {
+  background: rgba(29, 32, 38, 0.9);
+  border: 1px solid var(--border);
+  color: var(--text);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 12px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.lightbox-link.disabled { opacity: 0.4; pointer-events: none; }
+
+.lightbox-body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px 16px;
+  touch-action: none; /* pas de zoom/scroll natif du navigateur ici, seul le swipe JS gère les gestes */
+}
+/* L'image s'adapte toujours à la fenêtre du navigateur, quelle que soit sa
+   taille ou son orientation (portrait/paysage), sans jamais déborder. */
+#lightbox-img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+}
+
+.lightbox-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(29, 32, 38, 0.7);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 24px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  padding: 0;
+}
+.lightbox-nav-btn:disabled { opacity: 0.25; pointer-events: none; }
+.lightbox-nav-prev { left: 12px; }
+.lightbox-nav-next { right: 12px; }
+
+/* Écran tactile (pointeur "imprécis" = doigt) : le swipe suffit pour
+   naviguer, les flèches cliquables deviennent redondantes et prennent de
+   la place -- masquées ici. Restent visibles sur souris/trackpad. */
+@media (pointer: coarse) {
+  .lightbox-nav-btn { display: none; }
+}
+
+.lightbox-unsupported {
+  text-align: center;
+  color: var(--muted);
+  max-width: 420px;
+  padding: 0 16px;
+}
+.lightbox-unsupported p { font-size: 15px; line-height: 1.5; }
+.lightbox-unsupported strong { color: var(--text); text-transform: uppercase; }
+.lightbox-unsupported a {
+  display: inline-block;
+  margin-top: 12px;
+  background: var(--accent);
+  color: #06121f;
+  padding: 10px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.lightbox-info-panel {
+  position: absolute;
+  top: 60px;
+  right: 16px;
+  bottom: 16px;
+  width: min(340px, 85vw);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  overflow-y: auto;
+}
+.lightbox-info-panel.hidden { display: none; }
+.lightbox-info-panel h3 { margin: 0 0 12px; font-size: 15px; }
+.lightbox-info-panel dl { margin: 0; }
+.lightbox-info-panel dt { color: var(--muted); font-size: 11px; text-transform: uppercase;
+  letter-spacing: 0.03em; margin-top: 12px; }
+.lightbox-info-panel dt:first-child { margin-top: 0; }
+.lightbox-info-panel dd { margin: 2px 0 0; font-size: 14px; word-break: break-word; }
+.lightbox-info-panel .tag-list { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.lightbox-info-panel .tag-pill {
+  background: var(--bg); border: 1px solid var(--border); border-radius: 999px;
+  padding: 2px 8px; font-size: 12px;
+}
+
+@media (max-width: 700px) {
+  .lightbox-info-panel { position: static; width: auto; margin: 0 16px 16px; max-height: 40vh; }
+  .lightbox-body { padding-bottom: 0; }
+}
+
+/* Téléphones : tout en une colonne, cibles tactiles plus grandes */
+@media (max-width: 480px) {
+  header, .filters, .results-toolbar { padding-left: 12px; padding-right: 12px; }
+  .filter-row.inline { gap: 12px; }
+  .filter-row.inline > div { flex-basis: 100%; } /* empile verticalement, plus de débordement */
+  .keyword-input-wrap { max-width: none; }
+  .filter-actions button { flex: 1 1 auto; }
+  .results-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; padding: 8px 12px; }
+  .photo-card img { height: 140px; }
+  .lightbox-toolbar { justify-content: center; }
+}

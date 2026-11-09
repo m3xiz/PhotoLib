@@ -1,0 +1,14 @@
+[Unit]
+Description=PhotoLib Webapp (FastAPI, derrière Apache reverse proxy)
+After=network.target
+
+[Service]
+Type=simple
+User=photolib
+WorkingDirectory=/opt/photolib/webapp
+Environment=PHOTOLIB_WEB_CONFIG=/opt/photolib/webapp/config.yaml
+ExecStart=/opt/photolib/webapp/venv/bin/uvicorn app:app --host 127.0.0.1 --port 8800
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

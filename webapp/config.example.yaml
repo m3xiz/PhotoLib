@@ -1,0 +1,20 @@
+# Configuration du webapp PhotoLib (tourne sur yara.home.lan)
+# A copier en config.yaml et adapter
+
+# Copie LOCALE (synchronisée par rsync depuis le serveur Samba) - lecture seule
+db_path: /var/lib/photolib-web/index.db
+thumbnail_dir: /var/lib/photolib-web/thumbnails
+
+# Montage CIFS en lecture seule du même partage, pour servir les photos en HTTP
+# via Apache (Alias /photos -> ce chemin). Voir apache/photolib.conf
+photo_share_mount: /mnt/photolib-share
+
+# URL publique sous laquelle Apache sert les photos (doit correspondre à l'Alias Apache)
+photo_public_url_prefix: /photos
+
+# API de déclenchement de scan sur le serveur Samba (bouton "Rescanner")
+indexer_trigger_url: http://SAMBA_SERVER_IP:8899
+
+# Pagination
+page_size_default: 60
+page_size_max: 200

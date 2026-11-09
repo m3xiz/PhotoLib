@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhotoLib — Recherche</title>
+<link rel="stylesheet" href="style.css">
+
+<!-- PWA / "Ajouter à l'écran d'accueil" -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#14161a">
+<link rel="icon" href="icons/icon-192.png">
+
+<!-- iOS/iPadOS Safari ne lit pas manifest.json pour l'affichage plein écran,
+     il faut ces balises spécifiques en plus. -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PhotoLib">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+</head>
+<body>
+<header>
+  <div class="header-title">
+    <h1>PhotoLib</h1>
+    <button id="status-btn" class="icon-btn" title="Statut de l'index" aria-label="Statut de l'index">ℹ️</button>
+  </div>
+</header>
+
+<div id="status-modal" class="status-modal hidden">
+  <div class="status-modal-content">
+    <div class="status-modal-header">
+      <h3>Statut de l'index</h3>
+      <button id="status-close-btn" class="icon-btn" aria-label="Fermer">✕</button>
+    </div>
+    <div id="status-body">Chargement du statut…</div>
+  </div>
+</div>
+
+<section class="filters">
+  <div class="filter-row">
+    <label for="keyword-input">Mots-clés</label>
+    <div class="keyword-input-wrap">
+      <input id="keyword-input" placeholder="Tape un mot-clé…" autocomplete="off">
+      <div id="keyword-suggestions" class="keyword-suggestions hidden"></div>
+    </div>
+    <div id="keyword-chips" class="chips"></div>
+  </div>
+
+  <div class="filter-row">
+    <div class="keyword-mode">
+      <label><input type="radio" name="kwmode" value="and" checked> ET (toutes les photos ont tous ces mots-clés)</label>
+      <label><input type="radio" name="kwmode" value="or"> OU (au moins un de ces mots-clés)</label>
+    </div>
+    <label class="exclusive-toggle">
+      <input type="checkbox" id="exclusive-checkbox">
+      Exclusif (uniquement ces mots‑clés, aucun autre sur la photo)
+    </label>
+  </div>
+
+  <div class="filter-row inline">
+    <div>
+      <label for="filename-input">Nom de fichier contient</label>
+      <input type="text" id="filename-input" placeholder="ex: IMG_2023">
+    </div>
+  </div>
+
+  <div class="filter-row inline">
+    <div>
+      <label for="title-input">Titre contient</label>
+      <input type="text" id="title-input" placeholder="ex: coucher de soleil">
+    </div>
+    <div>
+      <label for="caption-input">Légende contient</label>
+      <input type="text" id="caption-input" placeholder="ex: vue depuis le sommet">
+    </div>
+  </div>
+
+  <div class="filter-row inline">
+    <div>
+      <label for="date-from">Date de prise de vue — du</label>
+      <input type="date" id="date-from">
+    </div>
+    <div>
+      <label for="date-to">au</label>
+      <input type="date" id="date-to">
+    </div>
+  </div>
+
+  <!-- RAW files toggle -->
+  <div class="filter-row inline">
+    <div>
+      <label>
+        <input type="checkbox" id="raw-toggle" />
+        Afficher les fichiers RAW
+      </label>
+    </div>
+  </div>
+
+  <div class="filter-actions">
+    <button id="search-btn">Rechercher</button>
+    <button id="reset-btn" class="secondary">Réinitialiser</button>
+    <button id="rescan-btn" class="secondary" title="Force un scan immédiat sur le serveur">🔄 Rescanner maintenant</button>
+  </div>
+</section>
+
+<section class="results-toolbar">
+  <span id="results-meta" class="results-meta"></span>
+  <label class="sort-select-label">
+    Tri :
+    <select id="sort-select">
+      <option value="date_desc">Plus récent d'abord</option>
+      <option value="date_asc">Plus ancien d'abord</option>
+    </select>
+  </label>
+</section>
+<section id="results" class="results-grid"></section>
+<section id="pagination" class="pagination"></section>
+
+<!-- Visionneuse plein écran : une seule modale réutilisée pour chaque photo,
+     pas de nouvelle fenêtre/onglet à chaque clic. -->
+<div id="lightbox" class="lightbox hidden">
+  <div class="lightbox-toolbar">
+    <button id="lightbox-info-btn" class="secondary" title="Afficher les informations Exif/IPTC">ℹ️ Infos</button>
+    <a id="lightbox-original-link" class="secondary lightbox-link" target="_blank" rel="noopener" title="Ouvrir le fichier original">⤓ Original</a>
+    <button id="lightbox-close-btn" class="secondary" title="Fermer (Échap)">✕ Fermer</button>
+  </div>
+  <div class="lightbox-body" id="lightbox-body">
+    <button id="lightbox-prev-btn" class="lightbox-nav-btn lightbox-nav-prev" aria-label="Photo précédente" title="Photo précédente (←)">‹</button>
+    <img id="lightbox-img" alt="">
+    <div id="lightbox-unsupported" class="lightbox-unsupported hidden">
+      <p>📷 Ce fichier est un <strong id="lightbox-unsupported-ext"></strong> et ne peut pas s'afficher directement dans le navigateur.</p>
+      <a id="lightbox-unsupported-link" href="#" target="_blank" rel="noopener">⤓ Télécharger l'original</a>
+    </div>
+    <button id="lightbox-next-btn" class="lightbox-nav-btn lightbox-nav-next" aria-label="Photo suivante" title="Photo suivante (→)">›</button>
+  </div>
+  <aside id="lightbox-info-panel" class="lightbox-info-panel hidden">
+    <h3>Informations</h3>
+    <dl id="lightbox-info-list"></dl>
+  </aside>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
