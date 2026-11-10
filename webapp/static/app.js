@@ -1,3 +1,5 @@
+// Version  1.02
+
 const state = {
   showRaw: false,
   keywords: [],
@@ -263,10 +265,13 @@ function openLightbox(photoId, index) {
   state.currentIndex = index;
   updateNavButtons();
   // Push modal state to history if not already present
-  if (!history.state?.modal) {
-    history.pushState({ modal: true }, '');
-  }
-
+  // The next 3 lines removed for debugging
+  // if (!history.state?.modal) {
+  //   console.log('pushState modal flag', history.state); history.pushState({ modal: true }, '');
+  //}
+  // line added for debugging in replacement of the 3 lines above
+  history.pushState({ modal: true }, '');
+  
   const lightbox = el("lightbox");
   const img = el("lightbox-img");
   const unsupported = el("lightbox-unsupported");
@@ -461,6 +466,15 @@ el("rescan-btn").addEventListener("click", async () => {
 
 el("status-btn").addEventListener("click", openStatusModal);
 el("status-close-btn").addEventListener("click", closeStatusModal);
+
+// Handle browser back button to close the lightbox if open
+window.addEventListener('popstate', () => {
+//  if (!el("lightbox").classList.contains("hidden") && history.state?.modal) {
+    // Clear modal flag before closing to avoid an extra pop
+    history.replaceState({}, '');
+    closeLightbox();
+//  }
+});
 el("status-modal").addEventListener("click", (e) => {
   if (e.target.id === "status-modal") closeStatusModal();
 });
